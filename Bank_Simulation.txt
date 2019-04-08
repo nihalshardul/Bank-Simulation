@@ -1,51 +1,47 @@
-Data Structure: array , queue 
+Data Structure: channels , goroutine 
 
-Functions: We are going to create p goroutine of chashier and simultaniously we are going to pass number of cashier...for n seconds we are going to use time library...
+Functions: We are going to create function called bank_simulation which will take parameters as cashier counter , customer , result and time and for each customer free cashier counter will be get allocated and some time duration will be set for each customer after that customer will leave the counter it is done by using synchronous channels and the result will be stored in result.
 
 Pseudo code:
 
-package main
-
-import "time"
-import "os"
-func bs(c int, cust int,t time){
-
-        for i:=0;i<cust;i++{
-                fmt.Println("cashier : ",c," customer : ",i," started")
-                time.Sleep(t * time.Millisecond)
-                fmt.Println("cashier : ",c," customer : ",i," stopped")
+func bank_simulation(c int, cust <-chan int,rest chan<- int, t int){
+	//cust will send data
+	//result will store data
+        for i := range cust{
+                fmt.Println("cashier : ",c," customer : ",i," started")	// print the customer started 
+                time.Sleep(time.Duration( t) * time.Millisecond)	// some t timespan is done
+                fmt.Println("cashier : ",c," customer : ",i," stopped") //print when customer completed
+		result <- i	// stores in result
 
 }
 }
 
 func main(){
-        doc1 := os.Args[1]
-        data1 := os.Args[2]
-	doc2 := os.Args[3]
-	data2 := os.Args[4]
-	doc3  := os.Args[5]
-	data3 := os.Args[6]
+	doc1 := os.Args[1]	//accept the first argument 
+	doc2 := os.Args[2]	//accept the second argument 
+	doc3 := os.Args[3]	//accept the third argument 
 
-        s1 := strings.Split(data1, "=")
-        s1[0] = s1[0][2:]
+	s1 := strings.Split(doc1, "=")[1] //split with "=" so that the number will store in form of string
 
-        s2 := strings.Split(data1, "=")
-        s2[0] = s2[0][2:]
+	s2 := strings.Split(doc2, "=")[1]
 
-        s3 := strings.Split(data1, "=")
-        s3[0] = s3[0][2:]
+	s3 := strings.Split(doc3, "=")[1]
+	
+        c:=strconv.Atoi(s1)	//convert string to int
+        cust := strconv.Atoi(s2)
+	t:= strconv.Atoi(s3)
 
+	cus := make(chan int, cust)	
+	res := make(chan int, cust)
 
-        c:s1[0]
-        cust := s2[0]
-	t:= s3[0]
-
-        for i:=0;i<c;i++{
-                go bs(i,cust,t)
+	for co := 1; co <= c; co++ {
+		go bank_simulation(co, cus, res, t)
+	}
+	for cc := 1; cc <= cust; cc++ {
+		cus <- cc
+	}
+	close(cus)
+	for a := 1; a <= cust; a++ {
+		<-res
+	}
 }
-        time.Sleep(100000 * time.Millisecond)
-
-
-}
-
-need to work on it....
