@@ -50,9 +50,9 @@ func main() {
 
 func bank_simulation(counter int, cust <-chan int, results chan<- int, ct int) {
 	for num := range cust {
-		fmt.Println(time.Now().Format("2006-01-02 15:04:05"), "--> Cashier", counter, ": Customer ", num, " Started")
+		fmt.Println(time.Now().Format("2006-01-02 15:04:05"), "--> Cashier "+strconv.Itoa(counter)+": Customer "+strconv.Itoa(num)+" Started")
 		time.Sleep(time.Duration(ct) * time.Second)
-		fmt.Println(time.Now().Format("2006-01-02 15:04:05"), "--> Cashier", counter, ": Customer ", num, " Completed")
+		fmt.Println(time.Now().Format("2006-01-02 15:04:05"), "--> Cashier "+strconv.Itoa(counter)+": Customer "+strconv.Itoa(num)+" Completed")
 		results <- 1
 	}
 }
