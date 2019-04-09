@@ -24,23 +24,27 @@ func main() {
 	num_customer, _ := strconv.Atoi(s2)
 	time_per_customer, _ := strconv.Atoi(s3)
 
-	cust := make(chan int, num_customer)
-	results := make(chan int, num_customer)
-
 	fmt.Println(time.Now().Format("2006-01-02 15:04:05"), "--> Bank Simulation Started")
-	for counter := 1; counter <= num_cashier; counter++ {
-		go bank_simulation(counter, cust, results, time_per_customer)
-	}
 
-	for cc := 1; cc <= num_customer; cc++ {
-		cust <- cc
-	}
-	close(cust)
+	if num_cashier == 0 {
+		fmt.Println(time.Now().Format("2006-01-02 15:04:05"), "--> No Cashier is present at the moment")
+	} else {
+		cust := make(chan int, num_customer)
+		results := make(chan int, num_customer)
 
-	for a := 1; a <= num_customer; a++ {
-		<-results
-	}
+		for counter := 1; counter <= num_cashier; counter++ {
+			go bank_simulation(counter, cust, results, time_per_customer)
+		}
 
+		for cc := 1; cc <= num_customer; cc++ {
+			cust <- cc
+		}
+		close(cust)
+
+		for a := 1; a <= num_customer; a++ {
+			<-results
+		}
+	}
 	fmt.Println(time.Now().Format("2006-01-02 15:04:05"), "--> Bank Simulation Ended")
 }
 
